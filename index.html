@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#667eea"/>
+    <meta name="description" content="Aplicación PWA completa con React, MongoDB, JWT y notificaciones push"/>
+    <meta name="keywords" content="pwa, react, mongodb, jwt, notifications, offline"/>
+    <meta name="author" content="Tu Nombre"/>
+    
+    <!-- PWA Enhanced Meta Tags -->
+    <meta name="application-name" content="Mi PWA App"/>
+    <meta name="mobile-web-app-capable" content="yes"/>
+    <meta name="msapplication-TileColor" content="#667eea"/>
+    <meta name="msapplication-tap-highlight" content="no"/>
+    
+    <!-- iOS Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+    <meta name="apple-mobile-web-app-title" content="Mi PWA"/>
+    <link rel="apple-touch-icon" href="/icons/icon256.png"/>
+    <link rel="apple-touch-startup-image" href="/icons/icon256.png"/>
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Mi PWA ZxR"/>
+    <meta property="og:description" content="Aplicación PWA completa con React, MongoDB, JWT y notificaciones push"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:url" content="https://tudominio.com"/>
+    <meta property="og:image" content="/icons/icon-512x512.png"/>
+    
+    <!-- Twitter Meta Tags -->
+    <meta name="twitter:card" content="summary"/>
+    <meta name="twitter:title" content="Mi PWA ZxR"/>
+    <meta name="twitter:description" content="Aplicación PWA completa con React, MongoDB, JWT y notificaciones push"/>
+    <meta name="twitter:image" content="/icons/icon-512x512.png"/>
+    
+    <!-- Preconnects for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="/manifest.json" crossorigin="use-credentials"/>
+    
+    <!-- Preload critical resources -->
+    <link rel="modulepreload" href="/src/main.jsx" as="script">
+    
+    <title>Mi PWA App - Full Stack</title>
+    
+    <style>
+      /* Critical CSS for initial loading */
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+      }
+      
+      #root {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      
+      /* Loading state before React hydrates */
+      .app-loading {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        color: white;
+        font-size: 18px;
+        flex-direction: column;
+        gap: 16px;
+      }
+      
+      .app-loading::after {
+        content: '';
+        width: 24px;
+        height: 24px;
+        border: 2px solid transparent;
+        border-top: 2px solid white;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Loading fallback -->
+    <div id="root">
+      <div class="app-loading">
+        <div>Cargando aplicación...</div>
+      </div>
+    </div>
+    
+    <script type="module" src="/src/main.jsx"></script>
+    
+    <script>
+      // Service Worker registration with fallback
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/sw.js')
+            .then(function(registration) {
+              console.log('SW registered: ', registration);
+            })
+            .catch(function(registrationError) {
+              console.log('SW registration failed: ', registrationError);
+            });
+        });
+      }
+      
+      // Prevent zoom on input focus on iOS
+      document.addEventListener('DOMContentLoaded', function() {
+        var viewport = document.querySelector('meta[name="viewport"]');
+        if (viewport) {
+          viewport.content = viewport.content + ', maximum-scale=1.0, user-scalable=no';
+        }
+      });
+    </script>
+  </body>
+</html>

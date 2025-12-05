@@ -1,0 +1,608 @@
+/* Dashboard.css - Minimalista Oscuro con Morado */
+.dashboard {
+  min-height: 100vh;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  background: #0f0f13;
+  color: #e2e8f0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Header del Dashboard */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding: 25px;
+  background: #1a1a24;
+  border-radius: 12px;
+  border: 1px solid #2d2d3a;
+  transition: border-color 0.2s ease;
+}
+
+.dashboard-header:hover {
+  border-color: #7c3aed;
+}
+
+.user-info h1 {
+  color: #ffffff;
+  margin-bottom: 6px;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.user-info p {
+  color: #8b8b9e;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.logout-btn {
+  background: #dc2626;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.logout-btn:hover {
+  background: #b91c1c;
+  transform: translateY(-1px);
+}
+
+/* Panel de Notificaciones */
+.notification-panel {
+  background: #1a1a24;
+  padding: 25px;
+  border-radius: 12px;
+  border: 1px solid #2d2d3a;
+  margin-bottom: 30px;
+  transition: border-color 0.2s ease;
+}
+
+.notification-panel:hover {
+  border-color: #7c3aed;
+}
+
+.notification-panel h2 {
+  color: #ffffff;
+  margin-bottom: 20px;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.notification-status {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.notification-status p {
+  background: #252533;
+  padding: 12px;
+  border-radius: 8px;
+  border-left: 3px solid #7c3aed;
+  font-weight: 500;
+  color: #8b8b9e;
+  font-size: 14px;
+}
+
+.notification-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.notification-btn {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  background: #2d2d3a;
+  color: #e2e8f0;
+}
+
+.notification-btn.enable {
+  background: #7c3aed;
+  color: white;
+}
+
+.notification-btn.send {
+  background: #f59e0b;
+  color: white;
+}
+
+.notification-btn.user-specific {
+  background: #8b5cf6;
+  color: white;
+}
+
+.notification-btn.multiple-users {
+  background: #a855f7;
+  color: white;
+}
+
+.notification-btn.disable {
+  background: #475569;
+  color: white;
+}
+
+.notification-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  opacity: 0.9;
+}
+
+.notification-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.notification-warning {
+  background: #431515;
+  color: #fca5a5;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #7f1d1d;
+  margin-top: 20px;
+  text-align: center;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+/* Formulario de Notificaciones Personalizadas */
+.custom-notification-form {
+  background: #252533;
+  border: 1px solid #2d2d3a;
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.custom-notification-form h3 {
+  margin: 0 0 16px 0;
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  color: #8b8b9e;
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #2d2d3a;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  background: #1a1a24;
+  color: #e2e8f0;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.1);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.target-selection {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-top: 16px;
+}
+
+.target-selection .form-group {
+  margin-bottom: 0;
+}
+
+/* Lista de usuarios con checkboxes */
+.users-checkbox-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 160px;
+  overflow-y: auto;
+  padding: 12px;
+  background: #1a1a24;
+  border: 1px solid #2d2d3a;
+  border-radius: 6px;
+  margin-top: 6px;
+}
+
+.user-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.user-checkbox:hover {
+  background: #2d2d3a;
+}
+
+.user-checkbox input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: #7c3aed;
+}
+
+.user-checkbox span {
+  font-size: 14px;
+  color: #e2e8f0;
+  font-weight: 500;
+}
+
+.selected-users-info {
+  margin-top: 12px;
+  padding: 12px;
+  background: #1a3a2a;
+  border: 1px solid #065f46;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.selected-users-info p {
+  margin: 0 0 8px 0;
+  color: #6ee7b7;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+/* Panel de Control de Base de Datos */
+.db-control-panel {
+  background: #1a1a24;
+  padding: 25px;
+  border-radius: 12px;
+  border: 1px solid #2d2d3a;
+  margin-bottom: 30px;
+  transition: border-color 0.2s ease;
+}
+
+.db-control-panel:hover {
+  border-color: #7c3aed;
+}
+
+.db-control-panel h2 {
+  color: #ffffff;
+  margin-bottom: 8px;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.db-control-panel > p {
+  color: #8b8b9e;
+  margin-bottom: 25px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.db-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 25px;
+}
+
+.db-btn {
+  padding: 14px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  background: #2d2d3a;
+  color: #e2e8f0;
+}
+
+.db-btn.create {
+  background: #7c3aed;
+  color: white;
+}
+
+.db-btn.add {
+  background: #059669;
+  color: white;
+}
+
+.db-btn.view {
+  background: #d97706;
+  color: white;
+}
+
+.db-btn.clear {
+  background: #dc2626;
+  color: white;
+}
+
+.db-btn:hover {
+  transform: translateY(-1px);
+  opacity: 0.9;
+}
+
+.db-info {
+  background: #252533;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #2d2d3a;
+}
+
+.db-info h3 {
+  margin-bottom: 12px;
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.db-info pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  background: #1a1a24;
+  padding: 16px;
+  border-radius: 6px;
+  border: 1px solid #2d2d3a;
+  max-height: 300px;
+  overflow-y: auto;
+  margin: 0;
+  color: #8b8b9e;
+}
+
+/* Images Section */
+.images-section {
+  background: #1a1a24;
+  padding: 25px;
+  border-radius: 12px;
+  border: 1px solid #2d2d3a;
+  transition: border-color 0.2s ease;
+}
+
+.images-section:hover {
+  border-color: #7c3aed;
+}
+
+.images-section h2 {
+  color: #ffffff;
+  margin-bottom: 16px;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.images-section > p {
+  color: #8b8b9e;
+  margin-bottom: 25px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.images-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.image-card {
+  background: #252533;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #2d2d3a;
+  transition: all 0.2s ease;
+}
+
+.image-card:hover {
+  border-color: #7c3aed;
+  transform: translateY(-2px);
+}
+
+.image-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.image-info {
+  padding: 16px;
+}
+
+.image-info h3 {
+  margin-bottom: 6px;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.image-info span {
+  color: #8b8b9e;
+  font-size: 13px;
+  font-weight: 500;
+  background: #2d2d3a;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  font-size: 16px;
+  color: #8b8b9e;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.loading::after {
+  content: '';
+  width: 18px;
+  height: 18px;
+  border: 2px solid #2d2d3a;
+  border-top: 2px solid #7c3aed;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .dashboard {
+    padding: 15px;
+  }
+  
+  .dashboard-header {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .user-info h1 {
+    font-size: 24px;
+  }
+  
+  .db-buttons {
+    grid-template-columns: 1fr;
+  }
+  
+  .notification-buttons {
+    flex-direction: column;
+  }
+  
+  .notification-btn {
+    width: 100%;
+  }
+  
+  .images-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .db-control-panel,
+  .notification-panel,
+  .images-section {
+    padding: 20px;
+  }
+
+  .target-selection {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .custom-notification-form {
+    padding: 16px;
+  }
+  
+  .users-checkbox-list {
+    max-height: 120px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard {
+    padding: 12px;
+  }
+  
+  .dashboard-header {
+    padding: 16px;
+  }
+  
+  .user-info h1 {
+    font-size: 20px;
+  }
+  
+  .db-control-panel h2,
+  .notification-panel h2,
+  .images-section h2 {
+    font-size: 18px;
+  }
+  
+  .db-buttons,
+  .notification-buttons {
+    gap: 8px;
+  }
+  
+  .db-btn,
+  .notification-btn {
+    padding: 12px 16px;
+    font-size: 13px;
+  }
+
+  .custom-notification-form h3 {
+    font-size: 16px;
+  }
+  
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+}
+
+/* Reduce motion */
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-header,
+  .notification-panel,
+  .db-control-panel,
+  .images-section,
+  .image-card,
+  .db-btn,
+  .notification-btn,
+  .logout-btn {
+    transition: none;
+    transform: none;
+  }
+  
+  .loading::after {
+    animation: none;
+  }
+}

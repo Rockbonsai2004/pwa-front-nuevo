@@ -1,6 +1,6 @@
 {
-  "name": "Mi PWA App - Full Stack",
-  "short_name": "PWAFullStack",
+  "name": "Mi PWA App",
+  "short_name": "PWAF",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#667eea",
@@ -9,25 +9,25 @@
   "description": "Aplicación PWA completa con React, MongoDB, JWT y notificaciones push",
   "icons": [
     {
-      "src": "/icons/icon48.png",
+      "src": "/icons/icon48.jpg",
       "sizes": "72x72",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/icon64.png",
+      "src": "/icons/icon64.jpeg",
       "sizes": "128x128",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/icon128.png",
+      "src": "/icons/icon128.jpeg",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icons/icon256.png",
+      "src": "/icons/icon256.jpg",
       "sizes": "256x256",
       "type": "image/png",
       "purpose": "any"

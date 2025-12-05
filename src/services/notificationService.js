@@ -2,7 +2,7 @@ import { apiService } from './api.js';
 
 class NotificationService {
   constructor() {
-    this.publicVapidKey = 'BD1Q14uwHwuQcY1OOPC-3UGp010y1xUh4ef6_wUE6Jw8V7haiXIaOZ1IGIEbzEEaonB8h9Ue-Tp1zCpmTWOE3js';
+    this.publicVapidKey = 'BNhM4adbLMSI3ciakgrGjvSKp3Hsb9XVXT-TcxP-BI6vFvobLdZlCrxPwMtKzIl-89uhgIxU4AC-VAiDmFylL24';
   }
 
   // Verificar compatibilidad

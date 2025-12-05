@@ -17,7 +17,7 @@ function App() {
     error: null
   });
   const [apiBaseUrl, setApiBaseUrl] = useState(
-    import.meta.env.VITE_API_URL || 'https://pwa-back-xmqw.onrender.com'
+    import.meta.env.VITE_API_URL || 'https://pwa-back-nuevo-1.onrender.com'
   );
   const [splashLoading, setSplashLoading] = useState(true);
 
@@ -220,10 +220,10 @@ function App() {
               <div className="alternative-urls">
                 <p>Si el problema persiste, prueba con:</p>
                 <button 
-                  onClick={() => changeApiBaseUrl('https://pwa-back-xmqw.onrender.com')}
-                  className={`url-btn ${apiBaseUrl === 'https://pwa-back-xmqw.onrender.com' ? 'active' : ''}`}
+                  onClick={() => changeApiBaseUrl('https://pwa-back-nuevo-1.onrender.com')}
+                  className={`url-btn ${apiBaseUrl === 'https://pwa-back-nuevo-1.onrender.com' ? 'active' : ''}`}
                 >
-                  🌐 Producción: pwa-back-xmqw.onrender.com
+                  🌐 Producción: pwa-back-nuevo-1.onrender.com
                 </button>
                 <button 
                   onClick={() => changeApiBaseUrl('http://localhost:5000')}

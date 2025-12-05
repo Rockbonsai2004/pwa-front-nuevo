@@ -1,6 +1,6 @@
 class ApiService {
   constructor() {
-    this.baseUrl = import.meta.env.VITE_API_URL || 'https://pwa-back-xmqw.onrender.com';
+    this.baseUrl = import.meta.env.VITE_API_URL || 'https://pwa-back-nuevo-1.onrender.com';
     this.token = localStorage.getItem('authToken');
   }
 

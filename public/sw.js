@@ -1,7 +1,24 @@
-// public/sw.js
-const CACHE_STATIC = 'app_shell_v4.0';
-const CACHE_DYNAMIC = 'dynamic_cache_v4.0';
-const CACHE_API = 'api_cache_v4.0';
+const CACHE_STATIC = 'app_shell_v4.1'; // Incrementé versión
+const CACHE_DYNAMIC = 'dynamic_cache_v4.1';
+const CACHE_API = 'api_cache_v4.1';
+
+// ==================== CONFIGURACIÓN VAPID ====================
+// ⚠️ CLAVE PÚBLICA VAPID - DEBE COINCIDIR CON RENDER ⚠️
+const publicVapidKey = 'BDaZhBZU0wRdO0DXVVoj_Jj71UWQfaDt8D1zHEJMa-cvjzVd6GjSNLUr81dSHqxGdsuDUb_o9GWKSLgfDzLGKws';
+
+// Función para convertir base64 a Uint8Array
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding)
+    .replace(/\-/g, '+')
+    .replace(/_/g, '/');
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
 
 // Assets estáticos críticos (solo los que tienes)
 const STATIC_ASSETS = [
@@ -26,7 +43,7 @@ const EXCLUDE_FROM_CACHE = [
 
 // ==================== INSTALACIÓN ====================
 self.addEventListener('install', (event) => {
-  console.log('🔄 SW: Instalando versión 4.0...');
+  console.log('🔄 SW: Instalando versión 4.1 con VAPID...');
   
   event.waitUntil(
     caches.open(CACHE_STATIC)
@@ -43,7 +60,8 @@ self.addEventListener('install', (event) => {
 
 // ==================== ACTIVACIÓN ====================
 self.addEventListener('activate', (event) => {
-  console.log('✅ SW: Activado - Versión 4.0');
+  console.log('✅ SW: Activado - Versión 4.1 con VAPID');
+  console.log('🔑 Clave VAPID pública configurada');
   
   event.waitUntil(
     caches.keys().then((cacheNames) => {
@@ -60,6 +78,7 @@ self.addEventListener('activate', (event) => {
       return self.clients.claim();
     }).then(() => {
       console.log('🚀 SW listo y reclamando clientes');
+      console.log('📱 Push notifications habilitadas');
     })
   );
 });
@@ -141,6 +160,108 @@ self.addEventListener('notificationclick', (event) => {
   );
 });
 
+// ==================== SUSCRIPCIÓN PUSH ====================
+async function subscribeToPush(userData = {}) {
+  try {
+    if (!self.registration || !self.registration.pushManager) {
+      console.error('❌ PushManager no disponible');
+      return null;
+    }
+
+    console.log('🔄 Intentando suscribir con clave VAPID...');
+    console.log('🔑 Clave usada:', publicVapidKey.substring(0, 20) + '...');
+    
+    // Suscribirse usando la clave VAPID pública
+    const subscription = await self.registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
+    });
+
+    console.log('✅ Usuario suscrito a notificaciones push');
+    console.log('📱 Endpoint:', subscription.endpoint?.substring(0, 60) + '...');
+    console.log('👤 Para usuario:', userData.email || 'No especificado');
+    
+    // Enviar suscripción al backend (Render)
+    const success = await sendSubscriptionToServer(subscription, userData);
+    
+    if (success) {
+      return subscription;
+    } else {
+      return null;
+    }
+    
+  } catch (error) {
+    console.error('❌ Error suscribiendo a push:', error);
+    
+    // Mostrar error específico
+    if (error.name === 'NotAllowedError') {
+      console.error('💡 El usuario denegó los permisos');
+    } else if (error.name === 'AbortError') {
+      console.error('💡 Suscripción abortada');
+    } else if (error.name === 'InvalidStateError') {
+      console.error('💡 Estado inválido, ya está suscrito');
+    }
+    
+    throw error;
+  }
+}
+
+async function sendSubscriptionToServer(subscription, userData) {
+  try {
+    console.log('📤 Enviando suscripción al servidor...');
+    
+    // URL de tu backend en Render
+    const response = await fetch('https://pwa-back-nuevo.onrender.com/api/push/subscribe', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': userData.token ? `Bearer ${userData.token}` : ''
+      },
+      body: JSON.stringify({
+        subscription: subscription,
+        email: userData.email || 'usuario@ejemplo.com',
+        name: userData.name || 'Usuario'
+      })
+    });
+
+    if (response.ok) {
+      console.log('✅ Suscripción guardada en el servidor');
+      return true;
+    } else {
+      const errorText = await response.text();
+      console.error('❌ Error del servidor:', response.status, errorText);
+      return false;
+    }
+  } catch (error) {
+    console.error('❌ Error enviando suscripción:', error);
+    return false;
+  }
+}
+
+async function unsubscribeFromPush() {
+  try {
+    const subscription = await self.registration.pushManager.getSubscription();
+    if (subscription) {
+      await subscription.unsubscribe();
+      console.log('✅ Usuario desuscrito de notificaciones push');
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error('❌ Error desuscribiendo:', error);
+    return false;
+  }
+}
+
+async function getCurrentSubscription() {
+  try {
+    return await self.registration.pushManager.getSubscription();
+  } catch (error) {
+    console.error('❌ Error obteniendo suscripción:', error);
+    return null;
+  }
+}
+
 // ==================== BACKGROUND SYNC ====================
 self.addEventListener('sync', (event) => {
   console.log('🔄 Evento Background Sync:', event.tag);
@@ -189,6 +310,56 @@ self.addEventListener('message', async (event) => {
       
     case 'REQUEST_SYNC':
       await syncPendingPosts();
+      break;
+      
+    case 'SUBSCRIBE_PUSH':
+      console.log('🔄 Solicitando suscripción push...');
+      try {
+        const subscription = await subscribeToPush(data);
+        if (subscription) {
+          // Notificar éxito a la app
+          const clients = await self.clients.matchAll();
+          clients.forEach(client => {
+            client.postMessage({
+              type: 'PUSH_SUBSCRIPTION_SUCCESS',
+              data: { subscription }
+            });
+          });
+        }
+      } catch (error) {
+        // Notificar error a la app
+        const clients = await self.clients.matchAll();
+        clients.forEach(client => {
+          client.postMessage({
+            type: 'PUSH_SUBSCRIPTION_ERROR',
+            data: { error: error.message }
+          });
+        });
+      }
+      break;
+      
+    case 'UNSUBSCRIBE_PUSH':
+      console.log('🔄 Solicitando desuscripción push...');
+      const success = await unsubscribeFromPush();
+      const clients = await self.clients.matchAll();
+      clients.forEach(client => {
+        client.postMessage({
+          type: 'PUSH_UNSUBSCRIBED',
+          data: { success }
+        });
+      });
+      break;
+      
+    case 'GET_PUSH_SUBSCRIPTION':
+      console.log('🔄 Solicitando suscripción actual...');
+      const currentSub = await getCurrentSubscription();
+      const appClients = await self.clients.matchAll();
+      appClients.forEach(client => {
+        client.postMessage({
+          type: 'CURRENT_PUSH_SUBSCRIPTION',
+          data: { subscription: currentSub }
+        });
+      });
       break;
       
     default:
@@ -337,4 +508,5 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-console.log('🚀 Service Worker 4.0 cargado correctamente');
+console.log('🚀 Service Worker 4.1 cargado con VAPID correctamente');
+console.log('🔑 Clave VAPID configurada:', publicVapidKey.substring(0, 20) + '...');

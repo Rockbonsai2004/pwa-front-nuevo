@@ -1,6 +1,4 @@
-const CACHE_STATIC = 'app_shell_v4.1'; // Incrementé versión
-const CACHE_DYNAMIC = 'dynamic_cache_v4.1';
-const CACHE_API = 'api_cache_v4.1';
+// public/sw.js
 
 // ==================== CONFIGURACIÓN VAPID ====================
 // ⚠️ CLAVE PÚBLICA VAPID - DEBE COINCIDIR CON RENDER ⚠️
@@ -19,6 +17,10 @@ function urlBase64ToUint8Array(base64String) {
   }
   return outputArray;
 }
+
+const CACHE_STATIC = 'app_shell_v4.2'; // Cambia versión
+const CACHE_DYNAMIC = 'dynamic_cache_v4.2';
+const CACHE_API = 'api_cache_v4.2';
 
 // Assets estáticos críticos (solo los que tienes)
 const STATIC_ASSETS = [
@@ -43,7 +45,8 @@ const EXCLUDE_FROM_CACHE = [
 
 // ==================== INSTALACIÓN ====================
 self.addEventListener('install', (event) => {
-  console.log('🔄 SW: Instalando versión 4.1 con VAPID...');
+  console.log('🔄 SW: Instalando versión 4.2 con VAPID...');
+  console.log('🔑 Clave VAPID configurada:', publicVapidKey.substring(0, 20) + '...');
   
   event.waitUntil(
     caches.open(CACHE_STATIC)
@@ -60,8 +63,7 @@ self.addEventListener('install', (event) => {
 
 // ==================== ACTIVACIÓN ====================
 self.addEventListener('activate', (event) => {
-  console.log('✅ SW: Activado - Versión 4.1 con VAPID');
-  console.log('🔑 Clave VAPID pública configurada');
+  console.log('✅ SW: Activado - Versión 4.2 con VAPID');
   
   event.waitUntil(
     caches.keys().then((cacheNames) => {
@@ -298,73 +300,127 @@ async function syncPendingPosts() {
   }
 }
 
-// ==================== MANEJO DE MENSAJES ====================
-self.addEventListener('message', async (event) => {
+// ==================== MANEJO DE MENSAJES CORREGIDO ====================
+self.addEventListener('message', (event) => {
   const { type, data } = event.data;
   console.log('📨 Mensaje recibido de la app:', type);
 
-  switch (type) {
-    case 'PROCESS_PENDING_POSTS':
-      await processPendingPosts(data.posts);
-      break;
-      
-    case 'REQUEST_SYNC':
-      await syncPendingPosts();
-      break;
-      
-    case 'SUBSCRIBE_PUSH':
-      console.log('🔄 Solicitando suscripción push...');
+  // IMPORTANTE: Usar event.waitUntil para manejar promesas
+  event.waitUntil(
+    (async () => {
       try {
-        const subscription = await subscribeToPush(data);
-        if (subscription) {
-          // Notificar éxito a la app
-          const clients = await self.clients.matchAll();
-          clients.forEach(client => {
-            client.postMessage({
-              type: 'PUSH_SUBSCRIPTION_SUCCESS',
-              data: { subscription }
-            });
-          });
+        switch (type) {
+          case 'PROCESS_PENDING_POSTS':
+            await processPendingPosts(data.posts);
+            // Responder que se completó
+            if (event.source) {
+              event.source.postMessage({
+                type: 'PROCESS_PENDING_POSTS_COMPLETE',
+                data: { success: true }
+              });
+            }
+            break;
+            
+          case 'REQUEST_SYNC':
+            await syncPendingPosts();
+            if (event.source) {
+              event.source.postMessage({
+                type: 'SYNC_REQUEST_COMPLETE',
+                data: { success: true }
+              });
+            }
+            break;
+            
+          case 'SUBSCRIBE_PUSH':
+            console.log('🔄 Solicitando suscripción push...');
+            try {
+              const subscription = await subscribeToPush(data);
+              if (subscription && event.source) {
+                event.source.postMessage({
+                  type: 'PUSH_SUBSCRIPTION_SUCCESS',
+                  data: { subscription }
+                });
+              } else if (event.source) {
+                event.source.postMessage({
+                  type: 'PUSH_SUBSCRIPTION_FAILED',
+                  data: { error: 'No se pudo crear suscripción' }
+                });
+              }
+            } catch (error) {
+              console.error('❌ Error en suscripción:', error);
+              if (event.source) {
+                event.source.postMessage({
+                  type: 'PUSH_SUBSCRIPTION_ERROR',
+                  data: { error: error.message }
+                });
+              }
+            }
+            break;
+            
+          case 'UNSUBSCRIBE_PUSH':
+            console.log('🔄 Solicitando desuscripción push...');
+            try {
+              const success = await unsubscribeFromPush();
+              if (event.source) {
+                event.source.postMessage({
+                  type: 'PUSH_UNSUBSCRIBED',
+                  data: { success }
+                });
+              }
+            } catch (error) {
+              console.error('❌ Error desuscribiendo:', error);
+              if (event.source) {
+                event.source.postMessage({
+                  type: 'PUSH_UNSUBSCRIBE_ERROR',
+                  data: { error: error.message }
+                });
+              }
+            }
+            break;
+            
+          case 'GET_PUSH_SUBSCRIPTION':
+            console.log('🔄 Solicitando suscripción actual...');
+            try {
+              const currentSub = await getCurrentSubscription();
+              if (event.source) {
+                event.source.postMessage({
+                  type: 'CURRENT_PUSH_SUBSCRIPTION',
+                  data: { subscription: currentSub }
+                });
+              }
+            } catch (error) {
+              console.error('❌ Error obteniendo suscripción:', error);
+              if (event.source) {
+                event.source.postMessage({
+                  type: 'GET_SUBSCRIPTION_ERROR',
+                  data: { error: error.message }
+                });
+              }
+            }
+            break;
+            
+          default:
+            console.log('📨 Mensaje no manejado:', type);
+            // SIEMPRE responder, incluso para mensajes no manejados
+            if (event.source) {
+              event.source.postMessage({
+                type: 'MESSAGE_RECEIVED',
+                data: { type, received: true }
+              });
+            }
         }
       } catch (error) {
-        // Notificar error a la app
-        const clients = await self.clients.matchAll();
-        clients.forEach(client => {
-          client.postMessage({
-            type: 'PUSH_SUBSCRIPTION_ERROR',
-            data: { error: error.message }
+        console.error('❌ Error procesando mensaje:', error);
+        // Responder con error
+        if (event.source) {
+          event.source.postMessage({
+            type: 'MESSAGE_ERROR',
+            data: { type, error: error.message }
           });
-        });
+        }
       }
-      break;
-      
-    case 'UNSUBSCRIBE_PUSH':
-      console.log('🔄 Solicitando desuscripción push...');
-      const success = await unsubscribeFromPush();
-      const clients = await self.clients.matchAll();
-      clients.forEach(client => {
-        client.postMessage({
-          type: 'PUSH_UNSUBSCRIBED',
-          data: { success }
-        });
-      });
-      break;
-      
-    case 'GET_PUSH_SUBSCRIPTION':
-      console.log('🔄 Solicitando suscripción actual...');
-      const currentSub = await getCurrentSubscription();
-      const appClients = await self.clients.matchAll();
-      appClients.forEach(client => {
-        client.postMessage({
-          type: 'CURRENT_PUSH_SUBSCRIPTION',
-          data: { subscription: currentSub }
-        });
-      });
-      break;
-      
-    default:
-      console.log('📨 Mensaje no manejado:', type);
-  }
+    })()
+  );
 });
 
 // Procesar posts pendientes
@@ -508,5 +564,5 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-console.log('🚀 Service Worker 4.1 cargado con VAPID correctamente');
+console.log('🚀 Service Worker 4.2 cargado con VAPID correctamente');
 console.log('🔑 Clave VAPID configurada:', publicVapidKey.substring(0, 20) + '...');

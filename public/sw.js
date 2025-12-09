@@ -211,7 +211,7 @@ async function sendSubscriptionToServer(subscription, userData) {
     console.log('📤 Enviando suscripción al servidor...');
     
     // URL de tu backend en Render
-    const response = await fetch('https://pwa-back-nuevo.onrender.com/api/push/subscribe', {
+    const response = await fetch('https://pwa-back-nuevo-1.onrender.com/api/push/subscribe', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
